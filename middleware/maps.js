@@ -1,10 +1,11 @@
 const https = require('https');
 const config = require('../config/config');
+var Slack = require('slack-node');
 
 getDistanceMatrixData("1616 Da Vinci Ct, Davis, CA", "1 Shields Wy, Davis, CA");
 
 function getDistanceMatrixData(origin, destination) {
-    var api_url, data;
+    var api_url, data, slack = new Slack();
 
     origin = encodeURI(origin);
     destination = encodeURI(destination);
@@ -22,37 +23,17 @@ function getDistanceMatrixData(origin, destination) {
                 duration = data.duration.text,
                 output = "Your trip from " + origin_address + " to " + destination_address + ", covering " + distance + " should take " + duration + "!";
 
-            var postOptions = {
-                hostname: config.slack.host,
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                port: config.slack.port,
-                path: config.slack.path,
-                method: "POST",
-                payload: {
-                    "channel": config.slack.channel,
-                    "fallback": encodeURI(api_url),
-                    "text": encodeURI(output)
-                }
-            };
-
-            var req = https.request(JSON.stringify(postOptions), (res) => {
-                res.on("data", (d) => {
-                    console.log('Slack Data Success!');
-                    process.stdout.write(d);
-                }).on("error", (e) => {
-                    console.log('Slack Error: ', e);
-                }).on("uncaughtException", (e) => {
-                    console.log('Slack Exception: ', e);
-                });
+            slack.setWebhook(config.slack.host + config.slack.path);
+            slack.webhook({
+                channel: config.slack.channel,
+                username: config.slack.bot_name,
+                text: encodeURI(output)
+            }, function (err, response) {
+                console.log(err);
+                console.log(response);
             });
 
-            req.end();
         });
-
-        console.log('attempted request');
-        return;
 
         res.on("error", (e) => {
             console.log('Google Error: ', e);
