@@ -15,7 +15,7 @@ function getDistanceMatrixData(origin, destination) {
     https.get(api_url, (res) => {
         res.on("data", (d) => {
             var tempData = JSON.parse(d),
-            data = tempData.rows[0].elements[0];
+                data = tempData.rows[0].elements[0];
 
             var origin_address = tempData.origin_addresses[0],
                 destination_address = tempData.destination_addresses[0],
@@ -27,7 +27,7 @@ function getDistanceMatrixData(origin, destination) {
             slack.webhook({
                 channel: config.slack.channel,
                 username: config.slack.bot_name,
-                text: encodeURI(output)
+                text: output
             }, function (err, response) {
                 console.log(err);
                 console.log(response);
