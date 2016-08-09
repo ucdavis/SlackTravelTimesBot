@@ -21,7 +21,7 @@ function getDistanceMatrixData(origin, destination) {
                 destination_address = tempData.destination_addresses[0],
                 distance = data.distance.text,
                 duration = data.duration.text,
-                output = "Your trip from " + origin_address + " to " + destination_address + ", covering " + distance + " should take " + duration + "!";
+                output = "*Depart From:* " + origin_address + "\n*Arrive At:* " + destination_address + "\n*Distance:* " + distance + "\n*Travel Time:* " + duration;
 
             slack.setWebhook(config.slack.host + config.slack.path);
             slack.webhook({
